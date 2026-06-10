@@ -810,6 +810,10 @@ function getPlayerSubject(player) {
   return player.name === 'Sinä' ? 'Sinä' : player.name;
 }
 
+function getRoundWinTitle(player) {
+  return player.name === 'Sinä' ? 'Sinä voitit kierroksen!' : `${getPlayerSubject(player)} voitti kierroksen!`;
+}
+
 function hasManualAbility(animalId) {
   return ['crocodile', 'crab', 'monkey', 'parrot'].includes(animalId);
 }
@@ -1494,7 +1498,7 @@ function endRound(winnerIdx, reason, allianceCards) {
 
   // Show round end
   const overlay = document.getElementById('round-end-overlay');
-  document.getElementById('round-end-title').textContent = `${getPlayerSubject(winner)} voitti kierroksen!`;
+  document.getElementById('round-end-title').textContent = getRoundWinTitle(winner);
   document.getElementById('round-winner-info').innerHTML = `${reasonText}<br>${crownGained}`;
 
   const allianceDisplay = document.getElementById('alliance-display');
