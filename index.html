@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#6B3FA0">
+<title>Collect!</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+@font-face {
+  font-family: 'Fredoka One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/fredoka-one-v15-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('fonts/nunito-v32-latin.woff2') format('woff2');
+}
+
+:root {
+  --gold: #F5C400;
+  --purple: #6B3FA0;
+  --green: #4CAF7D;
+  --orange: #E8652A;
+  --teal: #2AABBC;
+  --red: #E03535;
+  --bg: #FFF9ED;
+  --card-w-lg: 68px;
+  --card-h-lg: 90px;
+  --card-w-sm: 48px;
+  --card-h-sm: 64px;
+  --card-w-xs: 38px;
+  --card-h-xs: 52px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  min-height: 100dvh;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+h1, .title-font { font-family: 'Fredoka One', sans-serif; }
+
+/* ===== SETUP SCREEN ===== */
+#setup-screen {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 100dvh;
+  background: linear-gradient(160deg, #6B3FA0 0%, #2AABBC 100%);
+  padding: 24px;
+  gap: 20px;
+  overflow-x: hidden;
+}
+
+#setup-screen h1 {
+  font-size: clamp(3rem, 12vw, 5rem);
+  color: var(--gold);
+  text-shadow: 3px 3px 0 #3a1a70, 6px 6px 0 rgba(0,0,0,0.2);
+  letter-spacing: 2px;
+}
+
+.setup-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  width: min(100%, 420px);
+  max-width: 420px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.setup-card h2 {
+  font-family: 'Fredoka One', sans-serif;
+  color: var(--purple);
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.player-row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) 52px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 10px 8px;
+  border-radius: 12px;
+  background: #f8f4ff;
+}
+
+.player-row label { font-weight: 700; color: var(--purple); font-size: 0.9rem; }
+
+.player-row input[type=text] {
+  flex: 1;
+  min-width: 0;
+  border: 2px solid #d0c0f0;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.player-row select {
+  border: 2px solid #d0c0f0;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  background: white;
+  color: var(--purple);
+  width: 100%;
+  min-width: 0;
+  cursor: pointer;
+  text-align: center;
+  text-align-last: center;
+}
+
+.count-row {
+  display: flex; align-items: center; justify-content: center; gap: 16px;
+  margin-bottom: 16px;
+}
+
+.count-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%; border: none;
+  background: var(--purple); color: white;
+  font-size: 1.6rem; font-family: 'Fredoka One', sans-serif;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: transform 0.1s;
+}
+.count-btn:active { transform: scale(0.9); }
+
+#player-count-display {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 2rem; color: var(--purple); min-width: 32px; text-align: center;
+}
+
+.start-btn {
+  width: min(100%, 420px);
+  max-width: 420px;
+  background: linear-gradient(135deg, var(--gold), #ffad00);
+  color: var(--purple);
+  border: none; border-radius: 16px;
+  padding: 16px;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1.6rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #c49000, 0 8px 20px rgba(245,196,0,0.4);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.start-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #c49000; }
+
+@media (max-width: 430px) {
+  #setup-screen { padding: 16px; }
+  #setup-screen h1 { font-size: 3.2rem; }
+  .setup-card { width: calc(100vw - 32px); padding: 20px 14px; }
+  .start-btn { width: calc(100vw - 32px); }
+  .player-row { grid-template-columns: 62px minmax(0, 1fr) 44px; gap: 6px; padding: 10px 6px; }
+  .player-row label { font-size: 0.85rem; }
+  .player-row select { padding: 6px 2px; }
+}
+
+/* ===== GAME SCREEN ===== */
+#game-screen {
+  display: none;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* Header */
+#game-header {
+  background: var(--purple);
+  color: white;
+  padding: 8px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+
+#game-header h1 { font-size: 1.4rem; color: var(--gold); }
+
+.crowns-display {
+  display: flex; gap: 6px; align-items: center;
+}
+
+.crown-icon { font-size: 1.2rem; }
+
+/* Decks area */
+#decks-area {
+  background: #3a1a70;
+  padding: 8px 16px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.deck {
+  width: var(--card-w-lg); height: var(--card-h-lg);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #5a2fa0, #3a1a70);
+  border: 3px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+}
+
+.deck.clickable:hover, .deck.clickable:active {
+  transform: scale(1.05);
+  box-shadow: 0 0 16px var(--gold);
+}
+
+.deck-label {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 0.7rem; color: var(--gold);
+  position: absolute; bottom: 4px;
+}
+
+.deck-count {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1.1rem; color: white;
+}
+
+.deck-logo {
+  font-size: 1.8rem;
+}
+
+/* Revealed card slot */
+#revealed-slot {
+  display: flex; align-items: center; gap: 12px;
+}
+
+.revealed-label {
+  font-family: 'Fredoka One', sans-serif;
+  color: rgba(255,255,255,0.6); font-size: 0.75rem; text-align: center;
+}
+
+/* Players area */
+#players-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Landscape: keep player hands stacked vertically */
+@media (orientation: landscape) {
+  #players-area {
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    align-items: stretch;
+    gap: 6px;
+  }
+}
+
+.player-area {
+  background: white;
+  border-radius: 14px;
+  padding: 8px 10px;
+  border: 3px solid #e0d4f8;
+  transition: border-color 0.3s;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.player-area.active-player {
+  border-color: var(--gold);
+  box-shadow: 0 0 16px rgba(245,196,0,0.5);
+}
+
+.player-area.human-player {
+  border-color: var(--green);
+}
+
+.player-area.human-player.active-player {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(245,196,0,0.6);
+}
+
+.player-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 6px;
+}
+
+.player-name {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1rem; color: var(--purple);
+}
+
+.player-crowns { font-size: 0.9rem; }
+
+.ai-badge {
+  font-size: 0.65rem;
+  background: var(--teal); color: white;
+  border-radius: 6px; padding: 1px 5px;
+  font-weight: 700;
+}
+
+/* Card row */
+.card-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  min-height: var(--card-h-sm);
+  align-items: center;
+  position: relative;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Place buttons */
+.place-btn {
+  width: 30px; height: var(--card-h-lg);
+  border-radius: 8px;
+  background: var(--green);
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.1s, background 0.1s;
+  flex-shrink: 0;
+}
+.place-btn:hover { background: #3a9060; transform: scale(1.05); }
+.place-btn:active { transform: scale(0.95); }
+
+/* ===== CARD ===== */
+.card {
+  width: var(--card-w-sm);
+  height: var(--card-h-sm);
+  border-radius: 10px;
+  border: 2px solid rgba(0,0,0,0.15);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s;
+  flex-shrink: 0;
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.15);
+}
+
+.card.large {
+  width: var(--card-w-lg);
+  height: var(--card-h-lg);
+}
+
+.card.selectable { cursor: pointer; }
+.card.selectable:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+.card.selected { transform: translateY(-8px); box-shadow: 0 8px 20px rgba(245,196,0,0.6); outline: 3px solid var(--gold); }
+
+.card-emoji { font-size: 1.6rem; line-height: 1; }
+.card.large .card-emoji { font-size: 2.2rem; }
+
+.card-name {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 0.5rem; letter-spacing: 0.5px;
+  text-transform: uppercase; opacity: 0.7;
+}
+.card.large .card-name { font-size: 0.65rem; }
+
+.card-ability-dot {
+  position: absolute; top: 3px; right: 3px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: white; opacity: 0.8;
+}
+
+/* Animal colors */
+.animal-crocodile { background: linear-gradient(135deg, #4CAF7D, #2d8050); color: white; }
+.animal-crab       { background: linear-gradient(135deg, #E8652A, #b84010); color: white; }
+.animal-monkey     { background: linear-gradient(135deg, #c68642, #8B5A2B); color: white; }
+.animal-hermitcrab { background: linear-gradient(135deg, #2AABBC, #1a7a88); color: white; }
+.animal-lion       { background: linear-gradient(135deg, #F5C400, #c49000); color: #3a1a70; }
+.animal-octopus    { background: linear-gradient(135deg, #9B59B6, #6B3FA0); color: white; }
+.animal-parrot     { background: linear-gradient(135deg, #FFB4A8, #FF7D6E); color: #5B1B18; }
+.animal-chameleon  { background: linear-gradient(135deg, #B8F26A, #78D64B); color: #224012; }
+
+/* Bottom action area */
+#action-area {
+  background: white;
+  border-top: 3px solid #e0d4f8;
+  padding: 10px 16px;
+  flex-shrink: 0;
+}
+
+#action-msg {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1rem; color: var(--purple);
+  text-align: center; margin-bottom: 8px;
+  min-height: 1.4em;
+}
+
+#action-btns {
+  display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 10px 20px;
+  border-radius: 12px; border: none;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.1s;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+}
+.action-btn:active { transform: translateY(2px); box-shadow: none; }
+.action-btn.primary { background: var(--green); color: white; }
+.action-btn.secondary { background: var(--orange); color: white; }
+.action-btn.danger { background: var(--red); color: white; }
+.action-btn.gold { background: var(--gold); color: var(--purple); }
+.action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ===== MODAL ===== */
+#modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 100;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+#modal-overlay.visible { display: flex; }
+
+#modal-box {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 80dvh;
+  overflow-y: auto;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+}
+
+#modal-title {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1.5rem; color: var(--purple);
+  text-align: center; margin-bottom: 16px;
+}
+
+#modal-content { font-size: 0.95rem; color: #333; line-height: 1.5; margin-bottom: 16px; }
+
+.modal-cards {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  margin-bottom: 16px;
+}
+
+#modal-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+/* ===== TOAST ===== */
+#toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+  background: var(--purple); color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1rem;
+  z-index: 200;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90vw;
+  text-align: center;
+}
+#toast.show { opacity: 1; }
+
+/* ===== ROUND END ===== */
+#round-end-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 150;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+#round-end-overlay.visible { display: flex; }
+
+#round-end-box {
+  background: white;
+  border-radius: 24px;
+  padding: 28px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 16px 64px rgba(0,0,0,0.5);
+}
+
+#round-end-box h2 {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 2rem; color: var(--purple); margin-bottom: 8px;
+}
+
+#round-winner-info {
+  font-size: 1rem; color: #555; margin-bottom: 20px;
+}
+
+.alliance-display {
+  display: flex; justify-content: center; gap: 6px; margin: 12px 0;
+}
+
+/* Win screen */
+#win-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: linear-gradient(135deg, #6B3FA0, #F5C400);
+  z-index: 300;
+  align-items: center; justify-content: center;
+  flex-direction: column;
+  padding: 24px;
+  text-align: center;
+}
+#win-overlay.visible { display: flex; }
+
+#win-overlay h1 {
+  font-size: clamp(2.5rem, 10vw, 4rem);
+  color: white;
+  text-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+  margin-bottom: 8px;
+}
+
+#win-overlay h2 {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1.6rem; color: var(--gold); margin-bottom: 24px;
+}
+
+/* Landscape specifics */
+@media (orientation: landscape) {
+  :root {
+    --card-w-lg: 60px;
+    --card-h-lg: 80px;
+    --card-w-sm: 44px;
+    --card-h-sm: 58px;
+  }
+  #decks-area { padding: 6px 16px; }
+  .player-area { width: 100%; }
+  #action-area { padding: 8px 16px; }
+}
+
+/* Highlighted card (for ability target selection) */
+.card.target { outline: 3px solid var(--red); animation: pulse-red 0.6s infinite alternate; }
+@keyframes pulse-red { from { box-shadow: 0 0 0 0 rgba(224,53,53,0.4); } to { box-shadow: 0 0 12px 4px rgba(224,53,53,0.4); } }
+
+/* Animation: card fly in */
+@keyframes card-arrive {
+  from { transform: translateY(-20px) scale(0.8); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.card-new { animation: card-arrive 0.25s ease-out; }
+
+/* Chameleon wild indicator */
+.card.chameleon-acting { outline: 3px dashed var(--gold); }
+
+.skip-indicator {
+  font-size: 0.7rem; color: #aaa;
+  font-style: italic; padding: 4px 8px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-thumb { background: #c0b0e0; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ===== SETUP SCREEN ===== -->
+<div id="setup-screen">
+  <h1>Collect!</h1>
+  <div class="setup-card">
+    <h2>Pelaajien määrä</h2>
+    <div class="count-row">
+      <button class="count-btn" id="count-minus">−</button>
+      <div id="player-count-display">3</div>
+      <button class="count-btn" id="count-plus">+</button>
+    </div>
+    <div id="player-list"></div>
+  </div>
+  <button class="start-btn" id="start-btn">🎮 Aloita peli!</button>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="game-screen">
+  <div id="game-header">
+    <h1>Collect!</h1>
+    <div id="crowns-area" class="crowns-display"></div>
+  </div>
+
+  <div id="decks-area">
+    <div>
+      <div class="revealed-label">Pakka A</div>
+      <div class="deck" id="deck-a">
+        <div class="deck-logo">🂠</div>
+        <div class="deck-count" id="deck-a-count">32</div>
+      </div>
+    </div>
+    <div id="revealed-slot">
+      <div class="revealed-label">Paljastettu</div>
+      <div id="revealed-card-el"></div>
+    </div>
+    <div>
+      <div class="revealed-label">Pakka B</div>
+      <div class="deck" id="deck-b">
+        <div class="deck-logo">🂠</div>
+        <div class="deck-count" id="deck-b-count">32</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="players-area"></div>
+
+  <div id="action-area">
+    <div id="action-msg">Peli alkaa...</div>
+    <div id="action-btns"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div id="modal-title"></div>
+    <div id="modal-content"></div>
+    <div class="modal-cards" id="modal-cards"></div>
+    <div id="modal-btns"></div>
+  </div>
+</div>
+
+<!-- ===== ROUND END ===== -->
+<div id="round-end-overlay">
+  <div id="round-end-box">
+    <h2 id="round-end-title"></h2>
+    <div class="alliance-display" id="alliance-display"></div>
+    <div id="round-winner-info"></div>
+    <button class="action-btn primary" id="next-round-btn">Seuraava kierros ▶</button>
+  </div>
+</div>
+
+<!-- ===== WIN SCREEN ===== -->
+<div id="win-overlay">
+  <h1>👑 Voitto!</h1>
+  <h2 id="win-player-name"></h2>
+  <p id="win-desc" style="color:white;font-size:1.1rem;margin-bottom:24px;"></p>
+  <button class="action-btn gold" onclick="location.reload()">🔄 Uusi peli</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===== CONSTANTS =====
+const ANIMALS = [
+  { id:'crocodile', name:'Krokotiili', emoji:'🐊', ability:'Poista kortti', hasAbility:true },
+  { id:'crab',      name:'Rapu',       emoji:'🦀', ability:'Siirrä kortti', hasAbility:true },
+  { id:'monkey',    name:'Apina',      emoji:'🐒', ability:'Vaihda kortti', hasAbility:true },
+  { id:'hermitcrab',name:'Erakkorapu', emoji:'🦞', ability:'Lisävuoro',    hasAbility:true },
+  { id:'lion',      name:'Leijona',    emoji:'🦁', ability:'7 eri = voitto',hasAbility:true },
+  { id:'octopus',   name:'Tursas',     emoji:'🐙', ability:'3 paria = voitto',hasAbility:true },
+  { id:'parrot',    name:'Papukaija',  emoji:'🦜', ability:'Arvaa & ota',  hasAbility:true },
+  { id:'chameleon', name:'Kameleontti',emoji:'🦎', ability:'Jokerisana',   hasAbility:false },
+];
+
+const CARDS_PER_ANIMAL = 8;
+
+// AI player names
+const AI_NAMES = ['Äly-Aleksi','Botti-Beata','Cyber-Carina','Digi-Diogo','Robo-Riku','Nano-Nina'];
+
+// ===== STATE =====
+let G = {};
+
+// ===== SETUP =====
+let playerCount = 3;
+const playerListEl = document.getElementById('player-list');
+
+function renderSetup() {
+  playerListEl.innerHTML = '';
+  for (let i = 0; i < playerCount; i++) {
+    const row = document.createElement('div');
+    row.className = 'player-row';
+    const isHuman0 = i === 0;
+    row.innerHTML = `
+      <label>Pelaaja ${i+1}</label>
+      <input type="text" id="pname-${i}" value="${isHuman0 ? 'Sinä' : AI_NAMES[i-1] || 'Pelaaja '+(i+1)}" maxlength="16">
+      <select id="ptype-${i}" aria-label="Pelaajatyyppi" title="Pelaajatyyppi">
+        <option value="human" ${isHuman0?'selected':''}>👤</option>
+        <option value="ai" ${!isHuman0?'selected':''}>🤖</option>
+      </select>`;
+    playerListEl.appendChild(row);
+  }
+}
+
+document.getElementById('count-minus').onclick = () => {
+  if (playerCount > 2) { playerCount--; document.getElementById('player-count-display').textContent = playerCount; renderSetup(); }
+};
+document.getElementById('count-plus').onclick = () => {
+  if (playerCount < 5) { playerCount++; document.getElementById('player-count-display').textContent = playerCount; renderSetup(); }
+};
+
+renderSetup();
+
+document.getElementById('start-btn').onclick = () => {
+  const players = [];
+  for (let i = 0; i < playerCount; i++) {
+    players.push({
+      id: i,
+      name: document.getElementById(`pname-${i}`).value.trim() || `Pelaaja ${i+1}`,
+      isAI: document.getElementById(`ptype-${i}`).value === 'ai',
+      row: [],
+      halfCrowns: 0,
+      fullCrown: false,
+    });
+  }
+  startGame(players);
+};
+
+// ===== GAME INIT =====
+function buildDeck() {
+  const deck = [];
+  for (const a of ANIMALS) {
+    for (let i = 0; i < CARDS_PER_ANIMAL; i++) {
+      deck.push({ animal: a.id, id: `${a.id}_${i}` });
+    }
+  }
+  return shuffle(deck);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function startGame(players) {
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'flex';
+
+  const deck = buildDeck();
+  const half = Math.floor(deck.length / 2);
+
+  G = {
+    players,
+    deckA: deck.slice(0, half),
+    deckB: deck.slice(half),
+    halfCrowns: 3, // 3 half crowns available
+    fullCrown: 1,
+    currentPlayer: 0,
+    phase: 'draw', // draw | place | ability | target | hermit-extra
+    revealedCard: null,
+    revealedFrom: null,
+    knownTop: { A: null, B: null },
+    roundOver: false,
+    abilityPending: null, // {type, sourcePlayerIdx, card}
+    hermitExtraPlayer: null,
+    gameOver: false,
+    firstTurn: players.map(() => true),
+  };
+
+  renderGame();
+  updateCrownsDisplay();
+  setMessage(`${G.players[G.currentPlayer].name} aloittaa! Valitse pakka.`);
+  setActionBtns([]);
+
+  if (G.players[G.currentPlayer].isAI) {
+    setTimeout(aiTurn, 800);
+  }
+}
+
+// ===== RENDER =====
+function getAnimal(id) { return ANIMALS.find(a => a.id === id); }
+
+function getAnimalGenitive(id) {
+  return {
+    crocodile: 'Krokotiilin',
+    crab: 'Ravun',
+    monkey: 'Apinan',
+    hermitcrab: 'Erakkoravun',
+    lion: 'Leijonan',
+    octopus: 'Tursaan',
+    parrot: 'Papukaijan',
+    chameleon: 'Kameleontin',
+  }[id] || `${getAnimal(id).name}n`;
+}
+
+function getTurnMessage(player) {
+  if (player.name === 'Sinä') return 'Sinun vuorosi. Valitse pakka.';
+  return `${player.name}: vuoro. Valitse pakka.`;
+}
+
+function hasManualAbility(animalId) {
+  return ['crocodile', 'crab', 'monkey', 'parrot'].includes(animalId);
+}
+
+function makeCardEl(card, size='sm', classes=[]) {
+  const a = getAnimal(card.animal);
+  const el = document.createElement('div');
+  el.className = `card animal-${card.animal} ${size==='lg'?'large':''} ${classes.join(' ')}`;
+  el.dataset.cardId = card.id;
+  el.innerHTML = `
+    <div class="card-emoji">${a.emoji}</div>
+    <div class="card-name">${a.name}</div>
+    ${hasManualAbility(a.id) ? '<div class="card-ability-dot"></div>' : ''}
+  `;
+  return el;
+}
+
+function renderGame() {
+  renderDecks();
+  renderPlayers();
+  updateCrownsDisplay();
+}
+
+function renderDecks() {
+  document.getElementById('deck-a-count').textContent = G.deckA.length;
+  document.getElementById('deck-b-count').textContent = G.deckB.length;
+
+  // Clickable state
+  const deckA = document.getElementById('deck-a');
+  const deckB = document.getElementById('deck-b');
+  if (G.phase === 'draw' && !G.players[G.currentPlayer].isAI) {
+    deckA.classList.add('clickable'); deckB.classList.add('clickable');
+    deckA.onclick = () => drawCard('A');
+    deckB.onclick = () => drawCard('B');
+  } else {
+    deckA.classList.remove('clickable'); deckB.classList.remove('clickable');
+    deckA.onclick = null; deckB.onclick = null;
+  }
+
+  // Revealed card
+  const slot = document.getElementById('revealed-card-el');
+  slot.innerHTML = '';
+  if (G.revealedCard) {
+    const el = makeCardEl(G.revealedCard, 'lg', ['card-new']);
+    slot.appendChild(el);
+  } else {
+    const placeholder = document.createElement('div');
+    placeholder.style.cssText = `width:var(--card-w-lg);height:var(--card-h-lg);border-radius:10px;border:2px dashed rgba(255,255,255,0.3);`;
+    slot.appendChild(placeholder);
+  }
+}
+
+function renderPlayers() {
+  const area = document.getElementById('players-area');
+  area.innerHTML = '';
+
+  for (let i = 0; i < G.players.length; i++) {
+    const p = G.players[i];
+    const isActive = i === G.currentPlayer;
+    const isHuman = !p.isAI;
+
+    const div = document.createElement('div');
+    div.className = `player-area ${isActive?'active-player':''} ${isHuman?'human-player':''}`;
+    div.id = `player-area-${i}`;
+
+    const crownsStr = '👑'.repeat(p.fullCrown ? 1 : 0) + '🏅'.repeat(p.halfCrowns);
+
+    div.innerHTML = `
+      <div class="player-header">
+        <span class="player-name">${p.name}</span>
+        ${p.isAI ? '<span class="ai-badge">AI</span>' : ''}
+        <span class="player-crowns">${crownsStr || ''}</span>
+      </div>`;
+
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'card-row';
+    rowDiv.id = `row-${i}`;
+
+    // Place-left button (only for active human in place phase, with >0 cards)
+    if (isActive && !p.isAI && G.phase === 'place' && p.row.length > 0) {
+      const btn = document.createElement('button');
+      btn.className = 'place-btn'; btn.textContent = '←';
+      btn.onclick = () => placeCard('left');
+      rowDiv.appendChild(btn);
+    }
+
+    p.row.forEach((card, ci) => {
+      const el = makeCardEl(card, 'sm');
+
+      // Target selection for abilities
+      if (G.phase === 'target') {
+        const t = G.abilityPending;
+        if (t && canBeTarget(i, ci)) {
+          el.classList.add('target', 'selectable');
+          el.onclick = () => applyAbilityTarget(i, ci);
+        }
+      }
+      rowDiv.appendChild(el);
+    });
+
+    // Place-right button
+    if (isActive && !p.isAI && G.phase === 'place') {
+      const btn = document.createElement('button');
+      btn.className = 'place-btn'; btn.textContent = '→';
+      btn.onclick = () => placeCard('right');
+      rowDiv.appendChild(btn);
+    }
+
+    if (p.row.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'skip-indicator';
+      empty.textContent = 'Tyhjä rivi';
+      rowDiv.appendChild(empty);
+    }
+
+    div.appendChild(rowDiv);
+    area.appendChild(div);
+  }
+}
+
+function updateCrownsDisplay() {
+  const el = document.getElementById('crowns-area');
+  el.innerHTML = `${'🏅'.repeat(G.halfCrowns)} ${G.fullCrown ? '👑' : ''}`;
+}
+
+// ===== GAME FLOW =====
+function setMessage(msg) {
+  document.getElementById('action-msg').textContent = msg;
+}
+
+function setActionBtns(btns) {
+  const area = document.getElementById('action-btns');
+  area.innerHTML = '';
+  for (const b of btns) {
+    const btn = document.createElement('button');
+    btn.className = `action-btn ${b.cls||'primary'}`;
+    btn.textContent = b.label;
+    btn.onclick = b.fn;
+    if (b.disabled) btn.disabled = true;
+    area.appendChild(btn);
+  }
+}
+
+function drawCard(deck) {
+  const src = deck === 'A' ? G.deckA : G.deckB;
+  if (src.length === 0) {
+    showToast('Pakka on tyhjä!'); return;
+  }
+  const card = src.shift();
+  G.knownTop[deck] = null;
+  G.revealedCard = card;
+  G.revealedFrom = deck;
+
+  renderDecks();
+  setMessage(`Paljastui: ${getAnimal(card.animal).emoji} ${getAnimal(card.animal).name}`);
+
+  G.phase = 'place';
+
+  // Option to put back on either deck
+  if (G.firstTurn[G.currentPlayer]) {
+    // First turn: just place, no put-back option shown
+    setMessage(`Sijoita kortti riviisi.`);
+    setActionBtns([]);
+    renderPlayers();
+  } else if (G.players[G.currentPlayer].isAI) {
+    setMessage(`${getAnimal(card.animal).emoji} ${getAnimal(card.animal).name} paljastui. ${G.players[G.currentPlayer].name} sijoittaa kortin.`);
+    setActionBtns([]);
+    renderPlayers();
+  } else {
+    setMessage(`${getAnimal(card.animal).emoji} ${getAnimal(card.animal).name} paljastui. Pidä tai palauta.`);
+    setActionBtns([
+      { label: '🔙 Palauta & ota toisesta', cls: 'secondary', fn: putBackAndDrawOther }
+    ]);
+    renderPlayers();
+  }
+}
+
+function putBackAndDrawOther() {
+  // Put revealed card back on top of either deck (player's choice -> show modal)
+  const card = G.revealedCard;
+  const other = G.revealedFrom === 'A' ? 'B' : 'A';
+  showModal('Palauta pakkaan', `Laita ${getAnimal(card.animal).name} takaisin — kummalle pakalle?`, [], [
+    { label: `Pakka A`, cls: 'primary', fn: () => { putBack('A', card); showPutBackNotice(card, 'A', () => drawOtherAndPlace(other)); } },
+    { label: `Pakka B`, cls: 'secondary', fn: () => { putBack('B', card); showPutBackNotice(card, 'B', () => drawOtherAndPlace(other)); } },
+  ]);
+}
+
+function putBack(deck, card) {
+  if (deck === 'A') G.deckA.unshift(card);
+  else G.deckB.unshift(card);
+  G.knownTop[deck] = card;
+}
+
+function showPutBackNotice(card, deck, nextFn) {
+  closeModal();
+  const a = getAnimal(card.animal);
+  showModal('Kortti palautettu', `${a.emoji} ${a.name} palautettiin pakan ${deck} päälle.`, [card], [
+    { label:'Jatka', cls:'primary', fn: () => { closeModal(); if (typeof nextFn === 'function') nextFn(); } },
+  ]);
+}
+
+function drawOtherAndPlace(deck) {
+  closeModal();
+  const src = deck === 'A' ? G.deckA : G.deckB;
+  if (src.length === 0) { showToast('Toinen pakka on tyhjä!'); endTurnClean(); return; }
+  const card = src.shift();
+  G.knownTop[deck] = null;
+  G.revealedCard = card;
+  G.revealedFrom = deck;
+  G.phase = 'place';
+  renderDecks();
+  setMessage(`Uusi kortti: ${getAnimal(card.animal).emoji} ${getAnimal(card.animal).name}. Sijoita riviisi.`);
+  setActionBtns([]);
+  renderPlayers();
+}
+
+function placeCard(side) {
+  const p = G.players[G.currentPlayer];
+  const card = G.revealedCard;
+  if (!card) return;
+
+  if (side === 'left') p.row.unshift(card);
+  else p.row.push(card);
+
+  G.firstTurn[G.currentPlayer] = false;
+  G.revealedCard = null;
+  renderDecks();
+
+  if (checkChameleons(G.currentPlayer, () => continueAfterPlacedCard(card))) return;
+  continueAfterPlacedCard(card);
+}
+
+function continueAfterPlacedCard(card) {
+  // Check alliance immediately
+  if (checkAlliance(G.currentPlayer)) return; // round ended
+
+  if (applyAutomaticAbility(card, G.currentPlayer)) return;
+
+  // Check ability
+  const a = getAnimal(card.animal);
+  if (a.hasAbility && a.id !== 'chameleon' && a.id !== 'lion' && a.id !== 'octopus' && a.id !== 'hermitcrab') {
+    G.phase = 'ability';
+    if (G.players[G.currentPlayer].isAI) {
+      setMessage(`${G.players[G.currentPlayer].name} päättää ${getAnimalGenitive(a.id).toLowerCase()} kyvystä.`);
+      setActionBtns([]);
+    } else {
+      setMessage(`Käytä ${a.emoji} ${getAnimalGenitive(a.id)} kykyä?`);
+      setActionBtns([
+        { label: `✨ Käytä kykyä`, cls: 'gold', fn: () => activateAbility(card, G.currentPlayer) },
+        { label: 'Jatka', cls: 'secondary', fn: endTurnClean },
+      ]);
+    }
+    renderPlayers();
+  } else {
+    endTurnClean();
+  }
+}
+
+function applyAutomaticAbility(card, playerIdx) {
+  if (!card) return false;
+  if (card.animal === 'hermitcrab') {
+    activateHermitCrab(playerIdx, card);
+    return true;
+  }
+  return false;
+}
+
+function findCardInRow(playerIdx, card) {
+  if (!card) return -1;
+  return G.players[playerIdx].row.findIndex(c => c.id === card.id);
+}
+
+function checkChameleons(playerIdx, nextFn) {
+  const row = G.players[playerIdx].row;
+  const chameleonIndexes = [];
+  row.forEach((card, idx) => {
+    if (card.animal === 'chameleon') chameleonIndexes.push(idx);
+  });
+  if (chameleonIndexes.length < 2) return false;
+
+  const removed = [];
+  for (let i = chameleonIndexes.length - 1; i >= 0; i--) {
+    removed.unshift(row.splice(chameleonIndexes[i], 1)[0]);
+  }
+
+  const finish = deck => {
+    if (deck === 'A') G.deckA.push(...removed);
+    else G.deckB.push(...removed);
+    closeModal();
+    renderDecks();
+    renderPlayers();
+    if (typeof nextFn === 'function') nextFn();
+  };
+
+  if (!G.players[playerIdx].isAI) {
+    renderPlayers();
+    showModal('Kameleontit', 'Rivissäsi on 2 kameleonttia. Laita molemmat pakan pohjalle.', removed, [
+      { label: 'Pakka A pohja', cls:'primary', fn: () => finish('A') },
+      { label: 'Pakka B pohja', cls:'secondary', fn: () => finish('B') },
+    ]);
+  } else {
+    finish(Math.random() < 0.5 ? 'A' : 'B');
+  }
+  return true;
+}
+
+// ===== ABILITIES =====
+function activateAbility(card, playerIdx) {
+  const a = getAnimal(card.animal);
+  G.abilityPending = { type: a.id, card, sourcePlayerIdx: playerIdx };
+
+  switch (a.id) {
+    case 'crocodile': startTargetSelect('crocodile'); break;
+    case 'crab': startTargetSelect('crab'); break;
+    case 'monkey': startTargetSelect('monkey'); break;
+    case 'hermitcrab': activateHermitCrab(playerIdx, card); break;
+    case 'lion': checkLion(playerIdx); break;
+    case 'octopus': checkOctopus(playerIdx); break;
+    case 'parrot': activateParrot(playerIdx); break;
+    default: endTurnClean();
+  }
+}
+
+function canBeTarget(playerIdx, cardIdx) {
+  const t = G.abilityPending;
+  if (!t) return false;
+  switch (t.type) {
+    case 'crocodile':
+      // Any card in any player's row (including own), but not the card just played (last card on current player's row)
+      return true;
+    case 'crab':
+      return true; // any card in any row
+    case 'monkey':
+      // Swap the just-played Monkey with any card in any player's row.
+      return !(playerIdx === t.sourcePlayerIdx && G.players[playerIdx].row[cardIdx]?.id === t.card.id);
+    default: return false;
+  }
+}
+
+function startTargetSelect(type) {
+  G.phase = 'target';
+  const msgs = {
+    crocodile: 'Krokotiili: Valitse poistettava kortti mistä tahansa rivistä.',
+    crab: 'Rapu: Valitse liikutettava kortti.',
+    monkey: 'Apina: Valitse kortti, jonka kanssa juuri pelattu apina vaihdetaan.',
+  };
+  setMessage(msgs[type] || 'Valitse kohde.');
+  setActionBtns([{ label: '⏭ Peruuta', cls: 'secondary', fn: () => { G.abilityPending = null; endTurnClean(); } }]);
+  renderPlayers();
+}
+
+function applyAbilityTarget(playerIdx, cardIdx) {
+  const t = G.abilityPending;
+  if (!t) return;
+
+  switch (t.type) {
+    case 'crocodile': {
+      const removed = G.players[playerIdx].row.splice(cardIdx, 1)[0];
+      // Put at bottom of either deck: player chooses (human) or random (AI logic here handled inline)
+      if (!G.players[t.sourcePlayerIdx].isAI) {
+        showModal('Krokotiili', `Laita ${getAnimal(removed.animal).name} pakan pohjalle.`, [], [
+          { label: 'Pakka A pohja', cls:'primary', fn: () => { G.deckA.push(removed); closeModal(); G.abilityPending=null; endTurnClean(); } },
+          { label: 'Pakka B pohja', cls:'secondary', fn: () => { G.deckB.push(removed); closeModal(); G.abilityPending=null; endTurnClean(); } },
+        ]);
+      } else {
+        Math.random()<0.5 ? G.deckA.push(removed) : G.deckB.push(removed);
+        G.abilityPending = null; endTurnClean();
+      }
+      break;
+    }
+    case 'crab': {
+      // First select card, then select direction & amount
+      G.abilityPending.targetPlayer = playerIdx;
+      G.abilityPending.targetCard = cardIdx;
+      G.phase = 'crab-move';
+      if (!G.players[t.sourcePlayerIdx].isAI) {
+        showCrabMoveModal(playerIdx, cardIdx);
+      }
+      break;
+    }
+    case 'monkey': {
+      // Swap the just-played Monkey with any card in any player's row.
+      if (!G.players[t.sourcePlayerIdx].isAI) {
+        const myRow = G.players[t.sourcePlayerIdx].row;
+        const monkeyIdx = findCardInRow(t.sourcePlayerIdx, t.card);
+        if (monkeyIdx === -1) {
+          showToast('Apinaa ei löytynyt rivistä.');
+          G.abilityPending = null;
+          endTurnClean();
+          return;
+        }
+        const theirRow = G.players[playerIdx].row;
+        const myCard = myRow[monkeyIdx];
+        myRow[monkeyIdx] = theirRow[cardIdx];
+        theirRow[cardIdx] = myCard;
+        G.abilityPending = null;
+        G.phase = 'idle';
+        renderPlayers();
+        if (checkChameleons(t.sourcePlayerIdx, () => afterMonkeySwap(playerIdx))) return;
+        afterMonkeySwap(playerIdx);
+      }
+      break;
+    }
+  }
+  renderPlayers();
+}
+
+function afterMonkeySwap(otherPlayerIdx) {
+  const sourcePlayerIdx = G.currentPlayer;
+  if (otherPlayerIdx !== sourcePlayerIdx && checkChameleons(otherPlayerIdx, () => finishAfterMonkeySwap(sourcePlayerIdx))) return;
+  finishAfterMonkeySwap(sourcePlayerIdx);
+}
+
+function finishAfterMonkeySwap(sourcePlayerIdx) {
+  if (checkAlliance(sourcePlayerIdx)) return;
+  endTurnClean();
+}
+
+function showCrabMoveModal(playerIdx, cardIdx) {
+  const row = G.players[playerIdx].row;
+  const card = row[cardIdx];
+  const maxLeft = cardIdx;
+  const maxRight = row.length - 1 - cardIdx;
+  const a = getAnimal(card.animal);
+
+  const btns = [];
+  for (let d = 1; d <= maxLeft; d++) {
+    btns.push({ label: `← ${d}`, cls:'primary', fn: (dd => () => {
+      const c = G.players[playerIdx].row.splice(cardIdx, 1)[0];
+      G.players[playerIdx].row.splice(cardIdx - dd, 0, c);
+      closeModal();
+      G.abilityPending = null;
+      if (checkChameleons(playerIdx, finishAfterCrabMove)) return;
+      finishAfterCrabMove();
+    })(d) });
+  }
+  for (let d = 1; d <= maxRight; d++) {
+    btns.push({ label: `→ ${d}`, cls:'secondary', fn: (dd => () => {
+      const c = G.players[playerIdx].row.splice(cardIdx, 1)[0];
+      G.players[playerIdx].row.splice(cardIdx + dd, 0, c);
+      closeModal();
+      G.abilityPending = null;
+      if (checkChameleons(playerIdx, finishAfterCrabMove)) return;
+      finishAfterCrabMove();
+    })(d) });
+  }
+  if (btns.length === 0) {
+    showToast('Ei tilaa liikuttaa!');
+    G.abilityPending = null;
+    endTurnClean();
+    return;
+  }
+  showModal('Rapu', `Siirretään ${a.emoji} ${a.name} — kuinka monta paikkaa?`, [], btns);
+}
+
+function finishAfterCrabMove() {
+  if (checkAlliance(G.currentPlayer)) return;
+  endTurnClean();
+}
+
+function activateHermitCrab(playerIdx, card) {
+  // Extra turn only if the row already had another Hermit Crab or a Chameleon.
+  const row = G.players[playerIdx].row;
+  const hasExistingHermitCrab = row.some(c => c.id !== card?.id && (c.animal === 'hermitcrab' || c.animal === 'chameleon'));
+  if (hasExistingHermitCrab) {
+    G.abilityPending = null;
+    showToast(`${G.players[playerIdx].name} saa lisävuoron! 🦞`);
+    G.phase = 'draw';
+    renderDecks();
+    setMessage('Lisävuoro! Valitse pakka.');
+    setActionBtns([]);
+    if (G.players[playerIdx].isAI) setTimeout(() => aiTurn(), 800);
+  } else {
+    showToast('Rivissä ei ollut ennestään erakkorapua tai kameleonttia — kyky ei toimi.');
+    G.abilityPending = null;
+    endTurnClean();
+  }
+}
+
+function checkLion(playerIdx) {
+  const row = G.players[playerIdx].row;
+  const uniqueAnimals = new Set(row.map(c => c.animal));
+  // Count unique: chameleon counts as any, so if chameleon present, it helps
+  // For simplicity: chameleon can represent any missing animal
+  let effectiveUnique = new Set(row.filter(c=>c.animal!=='chameleon').map(c=>c.animal));
+  const chamCount = row.filter(c=>c.animal==='chameleon').length;
+  // total unique possible = effectiveUnique.size + chamCount (each chameleon can be different)
+  const total = Math.min(effectiveUnique.size + chamCount, ANIMALS.length);
+
+  G.abilityPending = null;
+  if (total >= 7 || row.length >= 7) {
+    // Check actual 7 different
+    const different = row.filter(c=>c.animal==='chameleon').length + new Set(row.filter(c=>c.animal!=='chameleon').map(c=>c.animal)).size;
+    if (different >= 7) {
+      showToast(`🦁 Leijona! 7 eri eläintä — voitto!`);
+      endRound(playerIdx, 'lion');
+      return;
+    }
+  }
+  showToast('Leijonalla ei vielä 7 eri eläintä.');
+  endTurnClean();
+}
+
+function checkOctopus(playerIdx) {
+  G.abilityPending = null;
+  if (hasThreePairs(playerIdx)) {
+    showToast(`🐙 Tursas! 3 paria — voitto!`);
+    endRound(playerIdx, 'octopus');
+  } else {
+    showToast('Tursaalla ei vielä 3 paria.');
+    endTurnClean();
+  }
+}
+
+function hasThreePairs(playerIdx) {
+  const row = G.players[playerIdx].row;
+  const counts = {};
+  let chamCount = 0;
+  for (const c of row) {
+    if (c.animal === 'chameleon') chamCount++;
+    else counts[c.animal] = (counts[c.animal]||0) + 1;
+  }
+  let pairs = Object.values(counts).reduce((s,v)=>s+Math.floor(v/2),0);
+  // Each chameleon can form a pair with any single
+  const singles = Object.values(counts).filter(v=>v%2===1).length;
+  const chamUsedForPairs = Math.min(chamCount, singles); // pair up singles
+  pairs += chamUsedForPairs;
+  const chamLeft = chamCount - chamUsedForPairs;
+  pairs += Math.floor(chamLeft / 2); // pair chameleons together
+  return pairs >= 3;
+}
+
+function activateParrot(playerIdx) {
+  G.abilityPending = null;
+  // Declare an animal
+  const animalOptions = ANIMALS.map(a => ({ label: `${a.emoji} ${a.name}`, cls:'primary', fn: () => {
+    closeModal();
+    // Reveal top of either deck
+    showModal('Papukaija', `Paljastetaan kortti. Kumpi pakka?`, [], [
+      { label:'Pakka A', cls:'primary', fn: () => { revealForParrot(playerIdx, a.id, 'A'); } },
+      { label:'Pakka B', cls:'secondary', fn: () => { revealForParrot(playerIdx, a.id, 'B'); } },
+    ]);
+  }}));
+  showModal('Papukaija', 'Julistа eläin:', [], animalOptions);
+}
+
+function revealForParrot(playerIdx, declaredAnimal, deck) {
+  closeModal();
+  const src = deck === 'A' ? G.deckA : G.deckB;
+  if (src.length === 0) { showToast('Pakka tyhjä!'); endTurnClean(); return; }
+  const card = src.shift();
+  G.knownTop[deck] = null;
+  const a = getAnimal(card.animal);
+  const da = getAnimal(declaredAnimal);
+
+  const isMatch = card.animal === declaredAnimal || card.animal === 'chameleon';
+  if (isMatch) {
+    // Chameleon is treated as declared animal
+    G.players[playerIdx].row.push(card);
+    if (checkChameleons(playerIdx, () => finishAfterParrotChameleons(playerIdx))) return;
+    revealForParrotHit(playerIdx, card);
+  } else {
+    // Put back on either deck
+    if (G.players[playerIdx].isAI) {
+      const putBackDeck = chooseAiPutBackDeck();
+      putBack(putBackDeck, card);
+      showPutBackNotice(card, putBackDeck, endTurnClean);
+      return;
+    }
+    showModal('Papukaija', `Ei osunut. ${a.emoji} ${a.name} ei ole ${da.name}. Palauta pakkaan.`, [card], [
+      { label:'Pakka A', cls:'primary', fn: () => { putBack('A', card); showPutBackNotice(card, 'A', endTurnClean); } },
+      { label:'Pakka B', cls:'secondary', fn: () => { putBack('B', card); showPutBackNotice(card, 'B', endTurnClean); } },
+    ]);
+  }
+}
+
+function chooseAiPutBackDeck() {
+  if (G.deckA.length === 0 && G.deckB.length > 0) return 'A';
+  if (G.deckB.length === 0 && G.deckA.length > 0) return 'B';
+  if (G.deckA.length < G.deckB.length) return 'A';
+  if (G.deckB.length < G.deckA.length) return 'B';
+  return Math.random() < 0.5 ? 'A' : 'B';
+}
+
+function revealForParrotHit(playerIdx, card) {
+  const a = getAnimal(card.animal);
+  if ((a.id === 'lion' || a.id === 'octopus') && checkAlliance(playerIdx)) return;
+  if (applyAutomaticAbility(card, playerIdx)) return;
+  if (G.players[playerIdx].isAI) {
+    renderPlayers();
+    if (checkAlliance(playerIdx)) return;
+    if (a.hasAbility && a.id !== 'chameleon' && a.id !== 'lion' && a.id !== 'octopus' && a.id !== 'hermitcrab') {
+      G.phase = 'ability';
+      setMessage(`${G.players[playerIdx].name} päättää ${getAnimalGenitive(a.id).toLowerCase()} kyvystä.`);
+      setActionBtns([]);
+      setTimeout(() => aiAbilityDecision(), 400);
+    } else {
+      endTurnClean();
+    }
+    return;
+  }
+  const btns = [];
+  if (a.hasAbility && a.id !== 'chameleon' && a.id !== 'lion' && a.id !== 'octopus' && a.id !== 'hermitcrab') {
+    btns.push({ label:`✨ Käytä ${getAnimalGenitive(a.id)} kykyä`, cls:'gold', fn: () => { closeModal(); activateAbility(card, playerIdx); } });
+  }
+  btns.push({ label:'Jatka', cls:'secondary', fn: () => { closeModal(); if(checkAlliance(playerIdx)) return; endTurnClean(); } });
+  showModal('Papukaija', `Osui! ${a.emoji} ${a.name} - lisätään riviisi.`, [card], btns);
+}
+
+function finishAfterParrotChameleons(playerIdx) {
+  if (checkAlliance(playerIdx)) return;
+  endTurnClean();
+}
+
+// ===== ALLIANCE CHECK =====
+function checkAlliance(playerIdx) {
+  const p = G.players[playerIdx];
+  const row = p.row;
+  if (row.length < 4) return false;
+
+  // Check 4 adjacent identical (chameleon counts as any)
+  for (let i = 0; i <= row.length - 4; i++) {
+    const slice = row.slice(i, i+4);
+    if (fourIdentical(slice)) {
+      endRound(playerIdx, 'alliance4', slice);
+      return true;
+    }
+  }
+
+  // Octopus ongoing check
+  if (row.some(c=>c.animal==='octopus') && hasThreePairs(playerIdx)) {
+    endRound(playerIdx, 'octopus');
+    return true;
+  }
+
+  // Lion ongoing check
+  if (row.some(c=>c.animal==='lion')) {
+    const different = new Set(row.filter(c=>c.animal!=='chameleon').map(c=>c.animal)).size 
+                    + row.filter(c=>c.animal==='chameleon').length;
+    if (different >= 7 || (new Set(row.filter(c=>c.animal!=='chameleon').map(c=>c.animal)).size + row.filter(c=>c.animal==='chameleon').length >= 7)) {
+      endRound(playerIdx, 'lion');
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function fourIdentical(slice) {
+  // All same animal, or 3 same + 1 chameleon, or any combo with chameleon as wildcard
+  const nonCham = slice.filter(c=>c.animal!=='chameleon');
+  if (nonCham.length === 0) return true; // 4 chameleons
+  const baseAnimal = nonCham[0].animal;
+  return nonCham.every(c=>c.animal===baseAnimal);
+}
+
+// ===== ROUND END =====
+function endRound(winnerIdx, reason, allianceCards) {
+  G.roundOver = true;
+  const winner = G.players[winnerIdx];
+
+  // Claim crown
+  let crownGained = '';
+  if (G.halfCrowns > 0) {
+    winner.halfCrowns++;
+    G.halfCrowns--;
+    crownGained = '🏅 Puolikruunu';
+  } else if (G.fullCrown > 0) {
+    winner.fullCrown = true;
+    G.fullCrown = 0;
+    crownGained = '👑 Täysi kruunu!';
+  }
+
+  // Check win condition
+  const won = winner.halfCrowns >= 2 || winner.fullCrown;
+
+  const reasonText = {
+    alliance4: '4 samanlaista vierekkäin!',
+    octopus: '🐙 Tursas: 3 paria!',
+    lion: '🦁 Leijona: 7 eri eläintä!',
+  }[reason] || '';
+
+  // Show round end
+  const overlay = document.getElementById('round-end-overlay');
+  document.getElementById('round-end-title').textContent = `${winner.name} voitti kierroksen!`;
+  document.getElementById('round-winner-info').innerHTML = `${reasonText}<br>${crownGained}`;
+
+  const allianceDisplay = document.getElementById('alliance-display');
+  allianceDisplay.innerHTML = '';
+  if (allianceCards) {
+    allianceCards.forEach(c => allianceDisplay.appendChild(makeCardEl(c, 'sm')));
+  }
+
+  overlay.classList.add('visible');
+
+  document.getElementById('next-round-btn').onclick = () => {
+    overlay.classList.remove('visible');
+    if (won) {
+      showWin(winnerIdx);
+    } else {
+      newRound(winnerIdx);
+    }
+  };
+}
+
+function showWin(playerIdx) {
+  const p = G.players[playerIdx];
+  document.getElementById('win-player-name').textContent = p.name;
+  document.getElementById('win-desc').textContent = p.fullCrown ? '👑 Täysi kruunu — pelikunkku!' : '🏅🏅 Kaksi puolikruunua — voittaja!';
+  document.getElementById('win-overlay').classList.add('visible');
+}
+
+function newRound(firstPlayerIdx) {
+  // Find next player in turn order
+  const nextPlayer = (firstPlayerIdx + 1) % G.players.length;
+
+  const deck = buildDeck();
+  const half = Math.floor(deck.length / 2);
+  G.deckA = deck.slice(0, half);
+  G.deckB = deck.slice(half);
+  G.knownTop = { A: null, B: null };
+  G.players.forEach(p => { p.row = []; });
+  G.revealedCard = null;
+  G.revealedFrom = null;
+  G.currentPlayer = nextPlayer;
+  G.phase = 'draw';
+  G.roundOver = false;
+  G.abilityPending = null;
+  G.firstTurn = G.players.map(() => true);
+
+  renderGame();
+  setMessage(`Uusi kierros! ${G.players[G.currentPlayer].name} aloittaa.`);
+  setActionBtns([]);
+
+  if (G.players[G.currentPlayer].isAI) {
+    setTimeout(aiTurn, 800);
+  }
+}
+
+// ===== END TURN =====
+function endTurnClean() {
+  G.phase = 'draw';
+  G.revealedCard = null;
+  G.abilityPending = null;
+  renderGame();
+
+  // Next player
+  G.currentPlayer = (G.currentPlayer + 1) % G.players.length;
+  const p = G.players[G.currentPlayer];
+
+  setMessage(getTurnMessage(p));
+  setActionBtns([]);
+  renderGame();
+
+  if (p.isAI) {
+    setTimeout(aiTurn, 600);
+  }
+}
+
+// ===== AI =====
+function aiTurn() {
+  if (G.roundOver || G.gameOver) return;
+  const p = G.players[G.currentPlayer];
+  if (!p.isAI) return;
+
+  if (G.phase === 'draw') {
+    const deck = aiChooseDeck(p);
+    drawCard(deck);
+    setTimeout(() => aiContinue(), 500);
+  }
+}
+
+function aiChooseDeck(player) {
+  const options = ['A', 'B']
+    .filter(deck => (deck === 'A' ? G.deckA : G.deckB).length > 0)
+    .map(deck => ({
+      deck,
+      knownCard: G.knownTop[deck],
+      size: deck === 'A' ? G.deckA.length : G.deckB.length,
+    }));
+
+  const knownOptions = options
+    .filter(o => o.knownCard)
+    .map(o => ({
+      ...o,
+      score: Math.max(aiRowPotential([o.knownCard, ...player.row]), aiRowPotential([...player.row, o.knownCard])) - aiRowPotential(player.row),
+    }))
+    .sort((a, b) => b.score - a.score || b.size - a.size);
+
+  if (knownOptions.length && knownOptions[0].score > 0) return knownOptions[0].deck;
+
+  const bySize = options.sort((a, b) => b.size - a.size);
+  if (bySize.length === 0) return 'A';
+  if (bySize.length === 1 || bySize[0].size !== bySize[1].size) return bySize[0].deck;
+  return Math.random() < 0.5 ? 'A' : 'B';
+}
+
+function aiRowPotential(row) {
+  const unique = new Set(row.filter(c => c.animal !== 'chameleon').map(c => c.animal)).size;
+  const chameleons = row.filter(c => c.animal === 'chameleon').length;
+  return scoreRow(row) * 10 + Math.min(unique + chameleons, ANIMALS.length) * 2 + countPotentialPairs(row) * 3;
+}
+
+function countPotentialPairs(row) {
+  const counts = {};
+  let chamCount = 0;
+  row.forEach(c => {
+    if (c.animal === 'chameleon') chamCount++;
+    else counts[c.animal] = (counts[c.animal] || 0) + 1;
+  });
+  let pairs = Object.values(counts).reduce((sum, count) => sum + Math.floor(count / 2), 0);
+  const singles = Object.values(counts).filter(count => count % 2 === 1).length;
+  const usedChameleons = Math.min(chamCount, singles);
+  pairs += usedChameleons;
+  pairs += Math.floor((chamCount - usedChameleons) / 2);
+  return pairs;
+}
+
+function aiContinue() {
+  if (G.roundOver || G.gameOver) return;
+  const p = G.players[G.currentPlayer];
+  if (!p.isAI) return;
+
+  if (G.phase === 'place') {
+    // AI strategy: prefer placing cards to form alliances
+    const card = G.revealedCard;
+    if (!G.firstTurn[G.currentPlayer] && aiShouldPutBackDrawnCard(p, card)) {
+      const putBackDeck = aiChoosePutBackDeckForDrawnCard(card);
+      const other = G.revealedFrom === 'A' ? 'B' : 'A';
+      putBack(putBackDeck, card);
+      showPutBackNotice(card, putBackDeck, () => {
+        drawOtherAndPlace(other);
+        setTimeout(() => aiContinue(), 500);
+      });
+      return;
+    }
+    const side = aiChooseSide(p, card);
+    placeCard(side);
+    setTimeout(() => aiAbilityDecision(), 400);
+  }
+}
+
+function aiShouldPutBackDrawnCard(player, card) {
+  if (!card) return false;
+  const other = G.revealedFrom === 'A' ? 'B' : 'A';
+  const otherDeck = other === 'A' ? G.deckA : G.deckB;
+  if (otherDeck.length === 0) return false;
+
+  const currentScore = Math.max(aiRowPotential([card, ...player.row]), aiRowPotential([...player.row, card]));
+  const knownOther = G.knownTop[other];
+  if (knownOther) {
+    const otherScore = Math.max(aiRowPotential([knownOther, ...player.row]), aiRowPotential([...player.row, knownOther]));
+    return otherScore > currentScore;
+  }
+
+  const baseline = aiRowPotential(player.row);
+  return currentScore <= baseline;
+}
+
+function aiChoosePutBackDeckForDrawnCard(card) {
+  const source = G.revealedFrom;
+  const other = source === 'A' ? 'B' : 'A';
+  const sourceSize = source === 'A' ? G.deckA.length : G.deckB.length;
+  const otherSize = other === 'A' ? G.deckA.length : G.deckB.length;
+  if (otherSize === 0) return source;
+  if (sourceSize <= otherSize) return source;
+  return other;
+}
+
+function aiChooseSide(p, card) {
+  if (p.row.length === 0) return 'right';
+  // Check if placing left or right helps form 4-in-a-row
+  const leftRow = [card, ...p.row];
+  const rightRow = [...p.row, card];
+
+  const leftScore = scoreRow(leftRow);
+  const rightScore = scoreRow(rightRow);
+
+  return leftScore >= rightScore ? 'left' : 'right';
+}
+
+function scoreRow(row) {
+  let maxRun = 0;
+  // Find longest run of same animal (chameleon = wildcard)
+  for (let i = 0; i < row.length; i++) {
+    const base = row[i].animal === 'chameleon' ? null : row[i].animal;
+    if (!base) continue;
+    let run = 0;
+    for (let j = i; j < row.length; j++) {
+      if (row[j].animal === base || row[j].animal === 'chameleon') run++;
+      else break;
+    }
+    maxRun = Math.max(maxRun, run);
+  }
+  return maxRun;
+}
+
+function aiAbilityDecision() {
+  if (G.roundOver || G.gameOver) return;
+  if (G.phase !== 'ability') return;
+
+  const p = G.players[G.currentPlayer];
+  const card = G.players[G.currentPlayer].row[G.players[G.currentPlayer].row.length - 1];
+  if (!card) { endTurnClean(); return; }
+
+  const a = getAnimal(card.animal);
+  // Simple AI: use ability if it seems useful
+  const useAbility = Math.random() > 0.3;
+
+  if (useAbility) {
+    aiUseAbility(card, G.currentPlayer);
+  } else {
+    endTurnClean();
+  }
+}
+
+function aiUseAbility(card, playerIdx) {
+  const a = getAnimal(card.animal);
+  G.abilityPending = { type: a.id, card, sourcePlayerIdx: playerIdx };
+
+  switch (a.id) {
+    case 'crocodile': {
+      // Remove a card from opponent that's most dangerous
+      let target = findBestTargetForRemoval();
+      if (target) {
+        const removed = G.players[target.pi].row.splice(target.ci, 1)[0];
+        Math.random()<0.5 ? G.deckA.push(removed) : G.deckB.push(removed);
+      }
+      G.abilityPending = null;
+      renderPlayers();
+      endTurnClean();
+      break;
+    }
+    case 'crab': {
+      // Move own card to improve row
+      const row = G.players[playerIdx].row;
+      // Simple: try to cluster same animals
+      const best = findBestCrabMove(row);
+      if (best) {
+        const c = row.splice(best.from, 1)[0];
+        row.splice(best.to, 0, c);
+      }
+      G.abilityPending = null;
+      renderPlayers();
+      if (checkAlliance(playerIdx)) return;
+      endTurnClean();
+      break;
+    }
+    case 'monkey': {
+      // Swap the just-played Monkey with a card that improves the row.
+      const swap = findBestMonkeySwap(playerIdx, card);
+      if (swap) {
+        const myRow = G.players[playerIdx].row;
+        const theirRow = G.players[swap.theirPi].row;
+        const monkeyIdx = findCardInRow(playerIdx, card);
+        const tmp = myRow[monkeyIdx];
+        myRow[monkeyIdx] = theirRow[swap.theirCard];
+        theirRow[swap.theirCard] = tmp;
+      }
+      G.abilityPending = null;
+      renderPlayers();
+      if (checkChameleons(playerIdx, () => afterMonkeySwap(swap?.theirPi ?? playerIdx))) return;
+      afterMonkeySwap(swap?.theirPi ?? playerIdx);
+      break;
+    }
+    case 'hermitcrab': activateHermitCrab(playerIdx, card); break;
+    case 'lion': checkLion(playerIdx); break;
+    case 'octopus': checkOctopus(playerIdx); break;
+    case 'parrot': aiParrot(playerIdx); break;
+    default: G.abilityPending=null; endTurnClean();
+  }
+}
+
+function findBestTargetForRemoval() {
+  // Find opponent with longest run and target the key card
+  let best = null;
+  for (let pi = 0; pi < G.players.length; pi++) {
+    if (pi === G.currentPlayer) continue;
+    const row = G.players[pi].row;
+    for (let ci = 0; ci < row.length; ci++) {
+      if (!best || true) {
+        best = { pi, ci, score: scoreRow(row) };
+      }
+    }
+  }
+  return best;
+}
+
+function findBestCrabMove(row) {
+  let bestScore = scoreRow(row);
+  let bestMove = null;
+  for (let from = 0; from < row.length; from++) {
+    for (let to = 0; to < row.length; to++) {
+      if (from === to) continue;
+      const newRow = [...row];
+      const c = newRow.splice(from, 1)[0];
+      newRow.splice(to, 0, c);
+      const s = scoreRow(newRow);
+      if (s > bestScore) { bestScore = s; bestMove = { from, to }; }
+    }
+  }
+  return bestMove;
+}
+
+function findBestMonkeySwap(playerIdx, monkeyCard) {
+  const myRow = G.players[playerIdx].row;
+  const monkeyIdx = findCardInRow(playerIdx, monkeyCard);
+  if (monkeyIdx === -1) return null;
+  let best = null;
+  let bestScore = scoreRow(myRow);
+  for (let theirPi = 0; theirPi < G.players.length; theirPi++) {
+    for (let theirCard = 0; theirCard < G.players[theirPi].row.length; theirCard++) {
+      if (theirPi === playerIdx && theirCard === monkeyIdx) continue;
+      const newMyRow = [...myRow];
+      const newTheirRow = [...G.players[theirPi].row];
+      const tmp = newMyRow[monkeyIdx];
+      newMyRow[monkeyIdx] = newTheirRow[theirCard];
+      newTheirRow[theirCard] = tmp;
+      const newScore = scoreRow(newMyRow);
+      if (newScore > bestScore) {
+        bestScore = newScore;
+        best = { theirPi, theirCard };
+      }
+    }
+  }
+  return best;
+}
+
+function aiParrot(playerIdx) {
+  // Declare the most common animal in own row, reveal from random deck
+  const row = G.players[playerIdx].row;
+  const counts = {};
+  row.forEach(c => { if(c.animal!=='chameleon') counts[c.animal]=(counts[c.animal]||0)+1; });
+  let declared = ANIMALS[Math.floor(Math.random()*ANIMALS.length)].id;
+  let maxCount = 0;
+  for (const [a,c] of Object.entries(counts)) { if(c>maxCount){maxCount=c;declared=a;} }
+
+  const deck = G.deckA.length > 0 ? 'A' : 'B';
+  G.abilityPending = null;
+  revealForParrot(playerIdx, declared, deck);
+}
+
+// ===== MODAL HELPERS =====
+function showModal(title, content, cards, btns) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-content').textContent = content;
+  const cardsEl = document.getElementById('modal-cards');
+  cardsEl.innerHTML = '';
+  cards.forEach(c => cardsEl.appendChild(makeCardEl(c, 'lg')));
+  const btnsEl = document.getElementById('modal-btns');
+  btnsEl.innerHTML = '';
+  btns.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = `action-btn ${b.cls||'primary'}`;
+    btn.textContent = b.label;
+    btn.onclick = b.fn;
+    btnsEl.appendChild(btn);
+  });
+  document.getElementById('modal-overlay').classList.add('visible');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('visible');
+  renderGame();
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
