@@ -806,6 +806,10 @@ function getTurnMessage(player) {
   return `${player.name}: vuoro. Valitse pakka.`;
 }
 
+function getPlayerSubject(player) {
+  return player.name === 'Sinä' ? 'Sinä' : player.name;
+}
+
 function hasManualAbility(animalId) {
   return ['crocodile', 'crab', 'monkey', 'parrot'].includes(animalId);
 }
@@ -1490,7 +1494,7 @@ function endRound(winnerIdx, reason, allianceCards) {
 
   // Show round end
   const overlay = document.getElementById('round-end-overlay');
-  document.getElementById('round-end-title').textContent = `${winner.name} voitti kierroksen!`;
+  document.getElementById('round-end-title').textContent = `${getPlayerSubject(winner)} voitti kierroksen!`;
   document.getElementById('round-winner-info').innerHTML = `${reasonText}<br>${crownGained}`;
 
   const allianceDisplay = document.getElementById('alliance-display');
