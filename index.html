@@ -162,11 +162,33 @@ h1, .title-font { font-family: 'Fredoka One', sans-serif; }
 }
 .start-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #c49000; }
 
+.setup-actions {
+  width: min(100%, 420px);
+  max-width: 420px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.rules-btn {
+  border: 2px solid rgba(255,255,255,0.8);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  padding: 10px 14px;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.rules-btn:active { transform: translateY(2px); }
+
 @media (max-width: 430px) {
   #setup-screen { padding: 16px; }
   #setup-screen h1 { font-size: 3.2rem; }
   .setup-card { width: calc(100vw - 32px); padding: 20px 14px; }
   .start-btn { width: calc(100vw - 32px); }
+  .setup-actions { width: calc(100vw - 32px); }
   .player-row { grid-template-columns: 62px minmax(0, 1fr) 44px; gap: 6px; padding: 10px 6px; }
   .player-row label { font-size: 0.85rem; }
   .player-row select { padding: 6px 2px; }
@@ -190,6 +212,27 @@ h1, .title-font { font-family: 'Fredoka One', sans-serif; }
 }
 
 #game-header h1 { font-size: 1.4rem; color: var(--gold); }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-rules-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(245,196,0,0.7);
+  background: rgba(255,255,255,0.12);
+  color: var(--gold);
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.header-rules-btn:active { transform: scale(0.94); }
 
 .crowns-display {
   display: flex; gap: 6px; align-items: center;
@@ -460,6 +503,37 @@ h1, .title-font { font-family: 'Fredoka One', sans-serif; }
 
 #modal-content { font-size: 0.95rem; color: #333; line-height: 1.5; margin-bottom: 16px; }
 
+.rules-content {
+  display: grid;
+  gap: 14px;
+}
+
+.rules-content h3 {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 1rem;
+  color: var(--purple);
+  margin: 0 0 4px;
+}
+
+.rules-content p,
+.rules-content ol,
+.rules-content ul {
+  margin: 0;
+}
+
+.rules-content ol,
+.rules-content ul {
+  padding-left: 20px;
+}
+
+.rules-content li + li {
+  margin-top: 4px;
+}
+
+.rules-content strong {
+  color: var(--purple);
+}
+
 .modal-cards {
   display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
   margin-bottom: 16px;
@@ -595,14 +669,20 @@ h1, .title-font { font-family: 'Fredoka One', sans-serif; }
     </div>
     <div id="player-list"></div>
   </div>
-  <button class="start-btn" id="start-btn">🎮 Aloita peli!</button>
+  <div class="setup-actions">
+    <button class="rules-btn" id="setup-rules-btn" type="button">? Ohjeet</button>
+    <button class="start-btn" id="start-btn">🎮 Aloita peli!</button>
+  </div>
 </div>
 
 <!-- ===== GAME SCREEN ===== -->
 <div id="game-screen">
   <div id="game-header">
     <h1>Collect!</h1>
-    <div id="crowns-area" class="crowns-display"></div>
+    <div class="header-actions">
+      <button class="header-rules-btn" id="game-rules-btn" type="button" aria-label="Ohjeet">?</button>
+      <div id="crowns-area" class="crowns-display"></div>
+    </div>
   </div>
 
   <div id="decks-area">
@@ -714,6 +794,9 @@ document.getElementById('count-plus').onclick = () => {
 };
 
 renderSetup();
+
+document.getElementById('setup-rules-btn').onclick = showRulesModal;
+document.getElementById('game-rules-btn').onclick = showRulesModal;
 
 document.getElementById('start-btn').onclick = () => {
   const players = [];
@@ -1857,7 +1940,46 @@ function aiParrot(playerIdx) {
 }
 
 // ===== MODAL HELPERS =====
+function showRulesModal() {
+  showModal('Ohjeet', '', [], [{ label: 'Sulje', cls: 'primary', fn: closeModal }]);
+  document.getElementById('modal-content').innerHTML = `
+    <div class="rules-content">
+      <section>
+        <h3>Tavoite</h3>
+        <p>Kerää omaan riviisi neljä vierekkäistä samaa eläintä tai voita jonkin eläimen kyvyllä. Kierroksen voittaja saa puolikruunun. Kaksi puolikruunua tai kokonainen kruunu voittaa pelin.</p>
+      </section>
+      <section>
+        <h3>Vuoro</h3>
+        <ol>
+          <li>Valitse Pakka A tai Pakka B ja paljasta päällimmäinen kortti.</li>
+          <li>Voit lisätä kortin rivisi vasempaan tai oikeaan päähän.</li>
+          <li>Jos et ole ensimmäisellä vuorollasi, voit palauttaa paljastetun kortin jommankumman pakan päälle ja nostaa kortin toisesta pakasta.</li>
+          <li>Kun kortti on rivissä, sen kyky ratkaistaan ja vuoro siirtyy seuraavalle pelaajalle.</li>
+        </ol>
+      </section>
+      <section>
+        <h3>Eläinten kyvyt</h3>
+        <ul>
+          <li><strong>Krokotiili:</strong> poista valitsemasi kortti mistä tahansa rivistä valitsemasi pakan pohjalle.</li>
+          <li><strong>Rapu:</strong> siirrä valitsemasi kortti missä tahansa rivissä vasemmalle tai oikealle.</li>
+          <li><strong>Apina:</strong> vaihda juuri pelattu apina minkä tahansa rivissä olevan kortin kanssa.</li>
+          <li><strong>Erakkorapu:</strong> saat automaattisesti uuden vuoron, jos rivissäsi oli jo erakkorapu tai kameleontti.</li>
+          <li><strong>Leijona:</strong> voitat kierroksen automaattisesti, jos rivissäsi on vähintään seitsemää eri eläintä.</li>
+          <li><strong>Tursas:</strong> voitat kierroksen automaattisesti, jos rivissäsi on kolme paria. Korttien järjestyksellä ei ole väliä.</li>
+          <li><strong>Papukaija:</strong> nimeä eläin ja paljasta kortti valitsemastasi pakasta. Jos kortti on nimetty eläin tai kameleontti, se lisätään riviisi. Muuten kortti palautetaan pakan päälle.</li>
+        </ul>
+      </section>
+      <section>
+        <h3>Kameleontti</h3>
+        <p>Kameleontti kelpaa miksi tahansa eläimeksi. Jos rivissä on kaksi kameleonttia, molemmat poistetaan heti ja laitetaan valitsemasi pakan pohjalle.</p>
+      </section>
+    </div>
+  `;
+  document.getElementById('modal-box').scrollTop = 0;
+}
+
 function showModal(title, content, cards, btns) {
+  document.getElementById('modal-box').scrollTop = 0;
   document.getElementById('modal-title').textContent = title;
   document.getElementById('modal-content').textContent = content;
   const cardsEl = document.getElementById('modal-cards');
@@ -1873,11 +1995,12 @@ function showModal(title, content, cards, btns) {
     btnsEl.appendChild(btn);
   });
   document.getElementById('modal-overlay').classList.add('visible');
+  document.getElementById('modal-box').scrollTop = 0;
 }
 
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('visible');
-  renderGame();
+  if (G.players) renderGame();
 }
 
 let toastTimer;
